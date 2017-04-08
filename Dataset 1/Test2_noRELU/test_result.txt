@@ -1,0 +1,3 @@
+final test loss 0.000802 
+final MSE 36.680859 
+final PSNR 32.486408

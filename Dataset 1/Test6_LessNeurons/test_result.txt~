@@ -1,0 +1,5 @@
+MSE  without optimization: 43.238914
+PSNR without optimization: 31.772056
+final test loss 0.000477 
+final MSE 30.953737 
+final PSNR 33.223671
