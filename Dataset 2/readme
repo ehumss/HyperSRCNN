@@ -1,0 +1,22 @@
+experiments on Harvard dataset   
+
+you can get the dateset at:    
+http://vision.seas.harvard.edu/hyperspec/download.html    
+
+10 test images:   
+imgf3.mat   
+imgf4.mat   
+imgf5.mat   
+imgf6.mat   
+imgf7.mat   
+imgf8.mat   
+imgh0.mat   
+imgh1.mat   
+imgh2.mat   
+imgh3.mat   
+
+the other 40 images are used as training dataset   
+
+each training/test image has a spacial size of 1024X1024   
+each training image is splited into 1024 32X32 sub-images for data augmentation   
+train the model using the sub-images
