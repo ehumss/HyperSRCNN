@@ -10,8 +10,8 @@ import tensorflow as tf
 def _int64_feature(value):
     return tf.train.Feature(int64_list=tf.train.Int64List(value=[value]))
 
-def _bytes_feature(value):
-    return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
+def _float_feature(value):
+    return tf.train.Feature(float_list=tf.train.FloatList(value=value))
 
 def DHW2HWD(img_DHW):
     depth  = img_DHW.shape[0]
@@ -45,13 +45,13 @@ def HyPrepareData(rootdir, output_dir, output_train_filename, output_test_filena
                     for filename in filenames:
                         data =  sio.loadmat(rootdir + '/train' + '/' + filename)
                         image = DHW2HWD(data['data'])
+                        image = image.astype(dtype = np.float32)
                         for h in range(hyper_image_height/sub_image_height):
                             for w in range(hyper_image_width/sub_image_width):
                                 sub_image = image[h*sub_image_height:(h+1)*sub_image_height,
                                                 w*sub_image_width:(w+1)*sub_image_width, :]
-                                image_raw = sub_image.tostring()
                                 feature={
-                                    'image_raw': _bytes_feature(image_raw),
+                                    'image_raw': _float_feature(sub_image.reshape((sub_image_height*sub_image_width*31))),
                                     'height': _int64_feature(sub_image.shape[0]),
                                     'width':  _int64_feature(sub_image.shape[1]),
                                     'depth':  _int64_feature(sub_image.shape[2]),
@@ -61,18 +61,18 @@ def HyPrepareData(rootdir, output_dir, output_train_filename, output_test_filena
                                 print ("adding training subimage N0.%d, height = %d, width = %d, depth = %d"
                                         % (train_num, sub_image.shape[0], sub_image.shape[1], sub_image.shape[2]))
                                 train_num = train_num + 1
-                        train_writer.close()
+                    train_writer.close()
             if dirname == 'test':
                 for parent, dirnames, filenames in os.walk(rootdir + '/test'):
-                    num = 1
+                    final_num = 1
+                    test_num = 1
                     for filename in filenames:
                         data =  sio.loadmat(rootdir + '/test' + '/' + filename)
                         image = DHW2HWD(data['data'])
+                        image = image.astype(dtype = np.float32)
 
-                        final_num = 1
-                        image_raw = image.tostring()
                         feature={
-                            'image_raw': _bytes_feature(image_raw),
+                            'image_raw': _float_feature(image.reshape((hyper_image_height*hyper_image_width*31))),
                             'height': _int64_feature(image.shape[0]),
                             'width':  _int64_feature(image.shape[1]),
                             'depth':  _int64_feature(image.shape[2]),
@@ -83,14 +83,12 @@ def HyPrepareData(rootdir, output_dir, output_train_filename, output_test_filena
                                 % (final_num, image.shape[0], image.shape[1], image.shape[2]))
                         final_num = final_num + 1
 
-                        test_num = 1
                         for h in range(hyper_image_height/sub_image_height):
                             for w in range(hyper_image_width/sub_image_width):
                                 sub_image = image[h*sub_image_height:(h+1)*sub_image_height,
                                                 w*sub_image_width:(w+1)*sub_image_width, :]
-                                image_raw = sub_image.tostring()
                                 feature={
-                                    'image_raw': _bytes_feature(image_raw),
+                                    'image_raw': _float_feature(sub_image.reshape((sub_image_height*sub_image_width*31))),
                                     'height': _int64_feature(sub_image.shape[0]),
                                     'width':  _int64_feature(sub_image.shape[1]),
                                     'depth':  _int64_feature(sub_image.shape[2]),
@@ -100,11 +98,12 @@ def HyPrepareData(rootdir, output_dir, output_train_filename, output_test_filena
                                 print ("adding test subimage N0.%d, height = %d, width = %d, depth = %d"
                                         % (test_num, sub_image.shape[0], sub_image.shape[1], sub_image.shape[2]))
                                 test_num = test_num + 1
-                        test_writer.close()
+                    test_writer.close()
+                    final_test_writer.close()
 
 
-    print ("add %d training subimages" % train_num-1)
-    print ("add %d test subimages" % test_num-1)
-    print ("add %d test images" % final_num-1)
+    #print ("add %d training subimages" % train_num-1)
+    #print ("add %d test subimages" % test_num-1)
+    #print ("add %d test images" % final_num-1)
 
     return train_num,test_num,final_num

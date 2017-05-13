@@ -11,13 +11,13 @@ def read_tfrecord(tf_filename, image_size):
     _, serialized_example = reader.read(filename_queue)
 
     feature={
-          'image_raw': tf.FixedLenFeature([], tf.string),
+          'image_raw': tf.FixedLenFeature([image_size[0]*image_size[1]*image_size[2]], tf.float32),
           'height': tf.FixedLenFeature([], tf.int64),
           'width': tf.FixedLenFeature([], tf.int64),
           'depth': tf.FixedLenFeature([], tf.int64),
     }
     features = tf.parse_single_example(serialized_example, features=feature)
-    image = tf.decode_raw(features['image_raw'], tf.uint8)
+    image = features['image_raw']
     image = tf.reshape(image, image_size)
     return image
 
@@ -27,9 +27,9 @@ def build_img_pair(image, img_size):
     width   = img_size[1]
     depth   = img_size[2]
     img_HR = \
-        np.arange(num_img*height*width*depth,dtype = np.float64).reshape([num_img,height,width,depth])
+        np.arange(num_img*height*width*depth,dtype = np.float32).reshape([num_img,height,width,depth])
     img_LR = \
-        np.arange(num_img*height*width*depth,dtype = np.float64).reshape([num_img,height,width,depth])
+        np.arange(num_img*height*width*depth,dtype = np.float32).reshape([num_img,height,width,depth])
     for i in range(num_img):
         img_downscale = cv2.pyrDown(image[i,:,:,:])
         img_interpolation = \
@@ -39,7 +39,7 @@ def build_img_pair(image, img_size):
     return img_HR[:,6:26,6:26,:], img_LR, img_LR[:,6:26,6:26,:]
 
 def weight(shape,name):
-	initial = tf.random_normal(shape, mean=0.0, stddev=0.1, dtype=tf.float64)
+	initial = tf.random_normal(shape, mean=0.0, stddev=0.1, dtype=tf.float32)
 	return tf.Variable(initial,name=name)
 
 def conv2d(x, W):
@@ -67,9 +67,9 @@ if __name__ == '__main__':
     W3 = 5; H3 = 5; C3 = image_depth
 
     with tf.name_scope('input_data'):
-    	img_LR = tf.placeholder(tf.float64, [None, image_height, image_width, image_depth])
-        img_LR_pad = tf.placeholder(tf.float64, [None, conv_height, conv_width, conv_depth])
-        img_HR = tf.placeholder(tf.float64, [None, conv_height, conv_width, conv_depth])
+    	img_LR = tf.placeholder(tf.float32, [None, image_height, image_width, image_depth])
+        img_LR_pad = tf.placeholder(tf.float32, [None, conv_height, conv_width, conv_depth])
+        img_HR = tf.placeholder(tf.float32, [None, conv_height, conv_width, conv_depth])
 
     with tf.name_scope('conv_1_feature_extraction'):
     	W_conv1 = weight([W1,H1,image_depth,C1],name='weights')
