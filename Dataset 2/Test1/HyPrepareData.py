@@ -101,9 +101,8 @@ def HyPrepareData(rootdir, output_dir, output_train_filename, output_test_filena
                     test_writer.close()
                     final_test_writer.close()
 
-
-    #print ("add %d training subimages" % train_num-1)
-    #print ("add %d test subimages" % test_num-1)
-    #print ("add %d test images" % final_num-1)
+    print ("add %d training subimages" % train_num-1)
+    print ("add %d test subimages" % test_num-1)
+    print ("add %d test images" % final_num-1)
 
     return train_num,test_num,final_num

@@ -56,8 +56,8 @@ if __name__ == '__main__':
     output_train_filename = 'train_data'
     output_test_filename  = 'test_data'
     output_final_filename = 'final_test_data'
-    train_num,test_num,final_num = HyPrepareData(rootdir, output_dir,
-        output_train_filename, output_test_filename, output_final_filename)
+    #train_num,test_num,final_num = HyPrepareData(rootdir, output_dir,
+    #    output_train_filename, output_test_filename, output_final_filename)
 
     image_height = 32; image_width  = 32; image_depth  = 31
     conv_height = 20; conv_width  = 20; conv_depth  = 31
